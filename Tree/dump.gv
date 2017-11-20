@@ -1,0 +1,4 @@
+digraph list {
+	node [shape = record,height=.1];
+	"node0" [label = "<f0>data = Hello |<f1>nextl = 0x0 |<f2>nextr = 0x0 |<f3>pos = 0x100589230 |<f4>prev = 0x0" ] ;
+}

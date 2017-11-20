@@ -20,5 +20,17 @@ typedef char* TYPE_TREE;
 int main(int argc, const char * argv[]) {
     // insert code here...
     printf("Hello, World!\n");
+    
+    Tree_t* Tree = TreeConstruct("Hello");
+    
+    TreeAddLeft(Tree, TreePositionCell(Tree, 0), "world");
+    
+    //TreeAddRight(Tree, TreePositionCell(Tree, 1), "!");
+    
+    TreeDump(Tree);
+    
+    TreeDestructor(Tree);
+    
+    
     return 0;
 }

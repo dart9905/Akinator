@@ -19,8 +19,11 @@ struct Cell_t  {
 struct Tree_t {
     Cell_t* cell;                  ///<pointer on dynamic massif cells
     int size = 0;                  ///<size array cells
-    Cell_t* position_cell;         ///<pointer to a list item
-    Cell_t* position_first_cell;   ///<pointer to the first cell of the list
+    Cell_t* position_first_cell;   ///<pointer to the first cell of the tree
+    
+        int position_number;           ///<number to a tree item
+        Cell_t* position_cell;         ///<pointer to a tree item
+    
 };
 
 
@@ -49,10 +52,11 @@ int TreeDestructor (Tree_t* Tree);
 
 /*!
  \brief CellDelete an auxiliary function for removing tree cells, this function is used only in the TreeGoRound and in the TreeRecurs
+ \param Tree pointer to TYPE type Tree
  \param cell pointer to a cell to delete
  \return Cell_t pointer to the previous branch in the tree
  */
-Cell_t* CellDelete(Cell_t* cell);
+Cell_t* TreeCellDelete(Tree_t* Tree, Cell_t* cell);
 
 
 /*!
@@ -105,18 +109,20 @@ int TreeDump (Tree_t* Tree);
 
 /*!
  \brief TreePrintNode1 recursive printing of cells into a dump, this function is used only in the TreeGoRound and in the TreeRecurs
+ \param Tree pointer to TYPE type Tree
  \param cell print pointer to a dump cell
  \return Cell_t pointer to the previous branch in the tree
  */
-Cell_t* TreePrintNode1 (Cell_t* cell);
+Cell_t* TreePrintNode1 (Tree_t* Tree, Cell_t* cell);
 
 
 /*!
  \brief TreePrintNode2 recursive printing of cells into a dump, this function is used only in the TreeGoRound and in the TreeRecurs
+ \param Tree pointer to TYPE type Tree
  \param cell print pointer to a dump cell
  \return Cell_t pointer to the previous branch in the tree
  */
-Cell_t* TreePrintNode2 (Cell_t* cell);
+Cell_t* TreePrintNode2 (Tree_t* Tree, Cell_t* cell);
 
 
 /*!
@@ -125,7 +131,16 @@ Cell_t* TreePrintNode2 (Cell_t* cell);
  \param cell_number number of the desired branch
  \return Cell_t* pointer to the branch
  */
-Cell_t* PositionCell (Tree_t* Tree, int cell_number);
+Cell_t* TreePositionCell (Tree_t* Tree, int cell_number);
+
+
+/*!
+ \brief TreePosRecurs recursively searches for a cell with a number, this function is used only in the TreeGoRound and in the TreeRecurs
+ \param Tree pointer to TYPE type Tree
+ \param cell print pointer to a dump cell
+ \return Cell_t pointer to the previous branch in the tree
+ */
+Cell_t* TreePosRecurs (Tree_t* Tree, Cell_t* cell);
 
 
 /*
@@ -133,25 +148,25 @@ Cell_t* PositionCell (Tree_t* Tree, int cell_number);
  \param number error number
  \return int
 */
-int error_prog (int number);
+int TreeErrorProg (int number);
 
 
 /*!
  \brief TreeGoRound function of wood crocheting and processing
  \param Tree pointer to TYPE type Tree
- \param (*function)(Cell_t*) This is an auxiliary function that will handle the final element of the tree branch, be sure to watch the ad
+ \param function This is an auxiliary function that will handle the final element of the tree branch, be sure to watch the ad
  \return int
  */
-int TreeGoRound (Tree_t* Tree, Cell_t* (*function)(Cell_t*));
+int TreeGoRound (Tree_t* Tree, Cell_t* (*function)(Tree_t*, Cell_t*));
 
 
 /*!
  \brief TreeRecurs recursively traverses the entire tree by stopping on each finite branch
  \param pos_cell a pointer to the cell of the array
- \param (*function)(Cell_t*) This is an auxiliary function that will handle the final element of the tree branch, be sure to watch the ad
+ \param function This is an auxiliary function that will handle the final element of the tree branch, be sure to watch the ad
  \return int returns a pointer to the previous branch element for recursive traversal (WARNING)!!!
  */
-Cell_t* TreeRecurs (Cell_t* pos_cell, Cell_t* (*function)(Cell_t*));
+Cell_t* TreeRecurs (Tree_t* Tree, Cell_t* pos_cell, Cell_t* (*function)(Tree_t*, Cell_t*));
 
 
 
@@ -170,7 +185,7 @@ Cell_t* TreeRecurs (Cell_t* pos_cell, Cell_t* (*function)(Cell_t*));
 
 
 
-Tree_t*  ListConstruct (TYPE_TREE element)
+Tree_t*  TreeConstruct (TYPE_TREE element)
 {
     Tree_t* Tree = new Tree_t;
     
@@ -182,7 +197,10 @@ Tree_t*  ListConstruct (TYPE_TREE element)
     cell->nextr = NULL;
     
     Tree->cell = cell;
-    Tree->position_cell = NULL;
+    
+        Tree->position_number = 0;
+        Tree->position_cell = NULL;
+    
     Tree->position_first_cell = Tree->cell;
     Tree->size = 1;
     return Tree;
@@ -192,14 +210,14 @@ Tree_t*  ListConstruct (TYPE_TREE element)
 
 int TreeDestructor (Tree_t* Tree) {
     assert(Tree);
-    TreeGoRound (Tree, CellDelete);
+    TreeGoRound (Tree, TreeCellDelete);
     delete Tree;
     return 0;
 }
 
 
 
-Cell_t* CellDelete(Cell_t* cell) {
+Cell_t* TreeCellDelete(Tree_t* Tree, Cell_t* cell) {
     assert(cell);
     Cell_t* pos_cell_prev = cell->prev;
     
@@ -231,16 +249,18 @@ int TreeAdd(Tree_t* Tree, Cell_t* cell, Cell_t* Cell_new_adress, TYPE_TREE eleme
 
 
 
-//в лево
 int TreeAddLeft(Tree_t* Tree, Cell_t* cell, TYPE_TREE element) {
+    assert(cell);
+    assert(Tree);
     TreeAdd(Tree, cell, cell->nextl, element);
     return 0;
 }
 
 
 
-//в право
 int TreeAddRight(Tree_t* Tree, Cell_t* cell, TYPE_TREE element) {
+    assert(cell);
+    assert(Tree);
     TreeAdd(Tree, cell, cell->nextr, element);
     return 0;
 }
@@ -275,21 +295,21 @@ int TreeDump (Tree_t* Tree) {
     TreeGoRound (Tree, TreePrintNode1);
     TreeGoRound (Tree, TreePrintNode2);
     
-    file_dump = fopen(DUMP_DOT_NAME_FILES,"wt");
+    file_dump = fopen(DUMP_DOT_NAME_FILES,"at");
     if (file_dump == NULL)
         return ERROR_DUMP;
     fprintf(file_dump, "}");
     fclose(file_dump);
     
-    system("open -a /Applications/Graphviz.app '/Users/macbook/Documents/GitHub/List/Lists/dump.gv'");
+    system("open -a /Applications/Graphviz.app '/Users/macbook/Documents/GitHub/Tree/Tree/dump.gv'");
     
     return 0;
 }
 
 
 
-Cell_t* TreePrintNode1 (Cell_t* cell) {
-    FILE *file_dump = fopen(DUMP_DOT_NAME_FILES,"wt");
+Cell_t* TreePrintNode1 (Tree_t* Tree, Cell_t* cell) {
+    FILE *file_dump = fopen(DUMP_DOT_NAME_FILES,"at");
     
     fprintf(file_dump, "\t\"node%i\" [label = \"<f0>data = %s |<f1>nextl = %p |<f2>nextr = %p |<f3>pos = %p |<f4>prev = %p\" ] ;\n", cell->number, cell->data, cell->nextl, cell->nextr, cell, cell->prev);
     
@@ -299,8 +319,8 @@ Cell_t* TreePrintNode1 (Cell_t* cell) {
 
 
 
-Cell_t* TreePrintNode2 (Cell_t* cell) {
-    FILE *file_dump = fopen(DUMP_DOT_NAME_FILES,"wt");
+Cell_t* TreePrintNode2 (Tree_t* Tree, Cell_t* cell) {
+    FILE *file_dump = fopen(DUMP_DOT_NAME_FILES,"at");
     
     if (cell->nextl != NULL)
         fprintf(file_dump, "\t\"node%i\":f1 -> \"node%i\":f3;\n", cell->number, (cell->nextl)->number);
@@ -315,59 +335,61 @@ Cell_t* TreePrintNode2 (Cell_t* cell) {
 
 
 
-Cell_t* PositionCell (Tree_t* Tree, int cell_number) {
+Cell_t* TreePositionCell (Tree_t* Tree, int cell_number) {
     assert(Tree);
+    Tree->position_cell = NULL;
     Tree->cell = Tree->position_first_cell;
+    Tree->position_number = cell_number;
+    TreeGoRound(Tree, TreePosRecurs);
     
-    for (int i = 0; i < Tree->size; ++i) {
-        if ((Tree->cell)->number == cell_number) {
-            return Tree->cell;
-        }
-        //Tree->cell = (Tree->cell)->next;
-    }
-    return NULL;
+    return Tree->position_cell;
 }
 
 
 
-int TreeGoRound (Tree_t* Tree, Cell_t* (*function)(Cell_t*)) {
+Cell_t* TreePosRecurs (Tree_t* Tree, Cell_t* cell) {
+    if (Tree->position_number == cell->number) {
+        Tree->position_cell = cell;
+    }
+    return cell->prev;
+}
+
+
+
+int TreeGoRound (Tree_t* Tree, Cell_t* (*function)(Tree_t*, Cell_t*)) {
     assert(function);
     assert(Tree);
     
-    Tree->cell = Tree->position_first_cell;
-    Cell_t* pos_cell = Tree->cell;
-    while (pos_cell->nextl != NULL) {
-        pos_cell = pos_cell->nextl;
-    }
-    TreeRecurs (pos_cell, function);
+    Tree->cell = Tree->position_first_cell;;
+    TreeRecurs (Tree, Tree->cell, function);
     return 0;
 }
 
 
 
-Cell_t* TreeRecurs (Cell_t* pos_cell, Cell_t* (*function)(Cell_t*)) {
+Cell_t* TreeRecurs (Tree_t* Tree, Cell_t* pos_cell, Cell_t* (*function)(Tree_t*, Cell_t*)) {
     assert(function);
+    assert(Tree);
     assert(pos_cell);
     
     if (pos_cell->nextl != NULL) {
         pos_cell = pos_cell->nextl;
-        TreeRecurs(pos_cell, function);
+        TreeRecurs(Tree, pos_cell, function);
     }
     if (pos_cell->nextr != NULL) {
         pos_cell = pos_cell->nextr;
-        TreeRecurs(pos_cell, function);
+        TreeRecurs(Tree, pos_cell, function);
     }
     // тут можно что-то юзать :)
     // крч используй функцию что бы юзать
     
-    pos_cell = function (pos_cell); // функция обязательна должна возвращать pos_prev указатель на предыдующую ветку дерева!!!!!!!!
-    assert(pos_cell);
+    pos_cell = function (Tree, pos_cell); // функция обязательна должна возвращать pos_prev указатель на предыдующую ветку дерева!!!!!!!!
     return pos_cell;
 }
 
 
 
-int error_prog (int number) {
+int TreeErrorProg (int number) {
     switch (number) {
         case ERROR_DUMP:
             printf("\ndump error in .dot\n");
