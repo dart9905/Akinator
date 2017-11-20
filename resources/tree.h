@@ -4,11 +4,11 @@
  \brief Cell list
  */
 struct Cell_t  {
-    TYPE_TREE data = 0; ///<value element cell
-    Cell_t* nextl;    ///<pointer on previous element cell, if his on that it is empty (left)
-    Cell_t* nextr;    ///<pointer on previous element cell, if his on that it is empty (right)
-    Cell_t* prev;    ///<pointer on next element cell, if his on that it is empty
-    int number;         ///<cell number from the list
+    TYPE_TREE data = 0;            ///<value element cell
+    Cell_t* nextl;                 ///<pointer on previous element cell, if his on that it is empty (left)
+    Cell_t* nextr;                 ///<pointer on previous element cell, if his on that it is empty (right)
+    Cell_t* prev;                  ///<pointer on next element cell, if his on that it is empty
+    int number;                    ///<cell number from the list
 };
 
 
@@ -24,8 +24,9 @@ struct Tree_t {
 
 
 enum ERROR {
-    ERROR_NEW_CELL = 1,
-    ERROR_DUMP = 2
+    ERROR_NEW_CELL = 1,            ///<error creating a new tree cell
+    ERROR_DUMP = 2,                ///<dump error
+    ERROR_DEL_CELL = 3             ///<error removing the cell tree
 };
 
 
@@ -36,12 +37,20 @@ enum ERROR {
  */
 Tree_t* TreeConstruct (TYPE_TREE element);
 
+
 /*!
  \brief TreeDestructor sheet constructor type TYPE_Tree
  \param Tree pointer to TYPE type Tree
  \return int
  */
 int TreeDestructor (Tree_t* Tree);
+
+
+/*!
+ \brief CellDelete an auxiliary function for removing tree cells, this function is used only in the TreeGoRound and in the TreeRecurs
+ \param cell pointer to a cell to delete
+ \return Cell_t pointer to the previous branch in the tree
+ */
 Cell_t* CellDelete(Cell_t* cell);
 
 
@@ -73,18 +82,38 @@ int TreeDelete (Tree_t* Tree, Cell_t* cell);
 int TreeDump (Tree_t* Tree);
 
 
+/*!
+ \brief PositionCell search for a branch with a number in cell_number in the Tree
+ \param Tree pointer to TYPE type Tree
+ \param cell_number number of the desired branch
+ \return Cell_t* pointer to the branch
+ */
 Cell_t* PositionCell (Tree_t* Tree, int cell_number);
 
 
-int TreeComparison (const void* pcell1, const void* pcell2);
-
-
+/*
+ \brief error_prog searching for errors in the use of a tree
+ \param number error number
+ \return int
+*/
 int error_prog (int number);
 
 
+/*!
+ \brief TreeGoRound function of wood crocheting and processing
+ \param Tree pointer to TYPE type Tree
+ \param (*function)(Cell_t*) This is an auxiliary function that will handle the final element of the tree branch, be sure to watch the ad
+ \return int
+ */
 int TreeGoRound (Tree_t* Tree, Cell_t* (*function)(Cell_t*));
 
 
+/*!
+ \brief TreeRecurs recursively traverses the entire tree by stopping on each finite branch
+ \param pos_cell a pointer to the cell of the array
+ \param (*function)(Cell_t*) This is an auxiliary function that will handle the final element of the tree branch, be sure to watch the ad
+ \return int returns a pointer to the previous branch element for recursive traversal (WARNING)!!!
+ */
 Cell_t* TreeRecurs (Cell_t* pos_cell, Cell_t* (*function)(Cell_t*));
 
 
@@ -168,11 +197,12 @@ int TreeDelete (Tree_t* Tree, Cell_t* cell) {
     assert(cell);
     assert(Tree);
     
-    
-    
-    delete cell;
-    --Tree->size;
-    return 0;
+    if ((cell->nextl == NULL) && (cell->nextr == NULL)) {
+        delete cell;
+        --Tree->size;
+        return 0;
+    }
+    return ERROR_DEL_CELL;
 }
 
 
@@ -277,6 +307,11 @@ int error_prog (int number) {
             
         case ERROR_NEW_CELL:
             printf("\nerror of writing a new cell to the list\n");
+            assert(0);
+            break;
+            
+        case ERROR_DEL_CELL:
+            printf("\nerror on deleting the desired item\n");
             assert(0);
             break;
             
