@@ -23,9 +23,9 @@ int main(int argc, const char * argv[]) {
     
     Tree_t* Tree = TreeConstruct("Hello");
     
-    TreeAddLeft(Tree, TreePositionCell(Tree, 0), "world");
+    TreeAddRight(Tree, TreePositionCell(Tree, 0), "world");
     
-    //TreeAddRight(Tree, TreePositionCell(Tree, 1), "!");
+    TreeAddLeft(Tree, TreePositionCell(Tree, 1), "!");
     
     TreeDump(Tree);
     
