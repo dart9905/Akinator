@@ -1,4 +1,5 @@
 
+const char* DUMP_DOT_NAME_FILES = "dump.gv";
 
 /*!
  \brief Cell list
@@ -55,7 +56,7 @@ Cell_t* CellDelete(Cell_t* cell);
 
 
 /*!
- \brief TreeConstruct sheet constructor type TYPE_Tree
+ \brief TreeAdd adding a new item
  \param Tree pointer to TYPE type Tree
  \param cell a pointer to the cell of the array
  \param Cell_new_adress pointer to the selected branch
@@ -63,6 +64,26 @@ Cell_t* CellDelete(Cell_t* cell);
  \return int
  */
 int TreeAdd (Tree_t* Tree, Cell_t* cell, Cell_t* Cell_new_adress, TYPE_TREE element);
+
+
+/*!
+ \brief TreeAddLeft adding a new element on the left branch
+ \param Tree pointer to TYPE type Tree
+ \param cell a pointer to the cell of the array
+ \param element insertion element
+ \return int
+ */
+int TreeAddLeft(Tree_t* Tree, Cell_t* cell, TYPE_TREE element);
+
+
+/*!
+ \brief TreeAddRight adding a new element on the right branch
+ \param Tree pointer to TYPE type Tree
+ \param cell a pointer to the cell of the array
+ \param element insertion element
+ \return int
+ */
+int TreeAddRight(Tree_t* Tree, Cell_t* cell, TYPE_TREE element);
 
 
 /*!
@@ -80,6 +101,22 @@ int TreeDelete (Tree_t* Tree, Cell_t* cell);
  \return int
  */
 int TreeDump (Tree_t* Tree);
+
+
+/*!
+ \brief TreePrintNode1 recursive printing of cells into a dump, this function is used only in the TreeGoRound and in the TreeRecurs
+ \param cell print pointer to a dump cell
+ \return Cell_t pointer to the previous branch in the tree
+ */
+Cell_t* TreePrintNode1 (Cell_t* cell);
+
+
+/*!
+ \brief TreePrintNode2 recursive printing of cells into a dump, this function is used only in the TreeGoRound and in the TreeRecurs
+ \param cell print pointer to a dump cell
+ \return Cell_t pointer to the previous branch in the tree
+ */
+Cell_t* TreePrintNode2 (Cell_t* cell);
 
 
 /*!
@@ -192,6 +229,24 @@ int TreeAdd(Tree_t* Tree, Cell_t* cell, Cell_t* Cell_new_adress, TYPE_TREE eleme
     return 0;
 }
 
+
+
+//в лево
+int TreeAddLeft(Tree_t* Tree, Cell_t* cell, TYPE_TREE element) {
+    TreeAdd(Tree, cell, cell->nextl, element);
+    return 0;
+}
+
+
+
+//в право
+int TreeAddRight(Tree_t* Tree, Cell_t* cell, TYPE_TREE element) {
+    TreeAdd(Tree, cell, cell->nextr, element);
+    return 0;
+}
+
+
+
 //удаление
 int TreeDelete (Tree_t* Tree, Cell_t* cell) {
     assert(cell);
@@ -207,43 +262,57 @@ int TreeDelete (Tree_t* Tree, Cell_t* cell) {
 
 
 
-/*
+
 int TreeDump (Tree_t* Tree) {
     assert(Tree);
     
-    FILE *file_dump = fopen("dump.gv","wt");
+    FILE *file_dump = fopen(DUMP_DOT_NAME_FILES,"wt");
     if (file_dump == NULL)
         return ERROR_DUMP;
-    
     fprintf(file_dump, "digraph list {\n\tnode [shape = record,height=.1];\n");
-    
-    Tree->cell = Tree->position_first_cell;
-    
-    for (long int i = 0; i < Tree->size; ++i) {
-        fprintf(file_dump, "\t\"node%i\" [label = \"<f0>data = %s |<f1>next = %p |<f2>pos = %p |<f3>prev = %p\" ] ;\n", (Tree->cell)->number, (Tree->cell)->data, (Tree->cell)->next, Tree->cell, (Tree->cell)->prev);
-        Tree->cell = (Tree->cell)->next;
-        
-    }
-    
-    Tree->cell = Tree->position_first_cell;
-    
-    for (long int i = 0; i < Tree->size; ++i) {
-        if ((Tree->cell)->next != NULL)
-            fprintf(file_dump, "\t\"node%i\":f1 -> \"node%i\":f2;\n", (Tree->cell)->number, ((Tree->cell)->next)->number);
-        if ((Tree->cell)->prev != NULL)
-            fprintf(file_dump, "\t\"node%i\":f3 -> \"node%i\":f2;\n", (Tree->cell)->number, ((Tree->cell)->prev)->number);
-        
-        Tree->cell = (Tree->cell)->next;
-    }
-    
-    fprintf(file_dump, "}");
-                       
     fclose(file_dump);
+    
+    TreeGoRound (Tree, TreePrintNode1);
+    TreeGoRound (Tree, TreePrintNode2);
+    
+    file_dump = fopen(DUMP_DOT_NAME_FILES,"wt");
+    if (file_dump == NULL)
+        return ERROR_DUMP;
+    fprintf(file_dump, "}");
+    fclose(file_dump);
+    
     system("open -a /Applications/Graphviz.app '/Users/macbook/Documents/GitHub/List/Lists/dump.gv'");
     
     return 0;
 }
-*/
+
+
+
+Cell_t* TreePrintNode1 (Cell_t* cell) {
+    FILE *file_dump = fopen(DUMP_DOT_NAME_FILES,"wt");
+    
+    fprintf(file_dump, "\t\"node%i\" [label = \"<f0>data = %s |<f1>nextl = %p |<f2>nextr = %p |<f3>pos = %p |<f4>prev = %p\" ] ;\n", cell->number, cell->data, cell->nextl, cell->nextr, cell, cell->prev);
+    
+    fclose(file_dump);
+    return cell->prev;
+}
+
+
+
+Cell_t* TreePrintNode2 (Cell_t* cell) {
+    FILE *file_dump = fopen(DUMP_DOT_NAME_FILES,"wt");
+    
+    if (cell->nextl != NULL)
+        fprintf(file_dump, "\t\"node%i\":f1 -> \"node%i\":f3;\n", cell->number, (cell->nextl)->number);
+    if (cell->nextr != NULL)
+        fprintf(file_dump, "\t\"node%i\":f2 -> \"node%i\":f3;\n", cell->number, (cell->nextr)->number);
+    if (cell->prev != NULL)
+        fprintf(file_dump, "\t\"node%i\":f4 -> \"node%i\":f3;\n", cell->number, (cell->prev)->number);
+    
+    fclose(file_dump);
+    return cell->prev;
+}
+
 
 
 Cell_t* PositionCell (Tree_t* Tree, int cell_number) {
