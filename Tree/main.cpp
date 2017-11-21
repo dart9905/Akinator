@@ -12,9 +12,11 @@
 #include <string.h>
 #include <math.h>
 
-typedef char* TYPE_TREE;
 
-#include "../resources/tree.h"
+    typedef char* TYPE_TREE;
+    #include "../resources/tree.h"
+
+const char* TREE_FILES = "../resources/save.txt";
 
 
 int main(int argc, const char * argv[]) {
@@ -23,9 +25,9 @@ int main(int argc, const char * argv[]) {
     
     Tree_t* Tree = TreeConstruct("Hello");
     
-    TreeAddRight(Tree, TreePositionCell(Tree, 0), "world");
+    TreeReadFiles(TREE_FILES,Tree, Tree->cell, LEFT_cell);
     
-    TreeAddLeft(Tree, TreePositionCell(Tree, 1), "!");
+    
     
     TreeDump(Tree);
     
