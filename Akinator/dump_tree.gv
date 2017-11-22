@@ -1,0 +1,24 @@
+digraph list {
+	node [shape = record,height=.1];
+	"node5" [label = "<f0>Kot" ] ;
+	"node6" [label = "<f0>KOSHKA-POLTORASHKA" ] ;
+	"node4" [label = "<f0>Bolshaya" ] ;
+	"node7" [label = "<f0>Volk" ] ;
+	"node3" [label = "<f0>Voet" ] ;
+	"node8" [label = "<f0>Sobaka" ] ;
+	"node2" [label = "<f0>Laet" ] ;
+	"node10" [label = "<f0>Derevo" ] ;
+	"node11" [label = "<f0>Kust" ] ;
+	"node9" [label = "<f0>Menshe dereva" ] ;
+	"node1" [label = "<f0>Rasteniye" ] ;
+	"node4":f0 -> "node5":f0 [color=red];
+	"node4":f0 -> "node6":f0  [color=green];
+	"node3":f0 -> "node4":f0 [color=red];
+	"node3":f0 -> "node7":f0  [color=green];
+	"node2":f0 -> "node3":f0 [color=red];
+	"node2":f0 -> "node8":f0  [color=green];
+	"node9":f0 -> "node10":f0 [color=red];
+	"node9":f0 -> "node11":f0  [color=green];
+	"node1":f0 -> "node2":f0 [color=red];
+	"node1":f0 -> "node9":f0  [color=green];
+}
