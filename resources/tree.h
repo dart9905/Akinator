@@ -480,9 +480,12 @@ Cell_t* TreePositionCell_data (Tree_t* Tree, Cell_t* cell) {
     assert(Tree);
     
     Tree->cell = Tree->position_first_cell;
-    Tree->position_cell = cell;
+    Tree->position_cell = NULL;
     
     TreeGoRound (Tree, Tree->position_first_cell, TreePosRecurs_data, FROM_BELOW);
+    
+    if (Tree->position_cell == NULL)
+        return NULL;
     
     return Tree->position_cell;
 }

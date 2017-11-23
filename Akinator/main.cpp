@@ -38,6 +38,10 @@ int AkinatorPlus (Tree_t* Tree);
 
 
 
+int AkinatorIf (Tree_t* Tree);
+
+
+
 int AkinatorSayPrint (Tree_t* Tree, Cell_t* cell);
 
 
@@ -135,6 +139,11 @@ int AkinatorGo (Tree_t* Tree) {
             printf ("Это %s?\n", Tree->cell->data);
             _SAY_("Это ", Tree->cell->data, "?");
             scanf("%s", str);
+            if ((strcmp(str,"Угадала") == 0) || (strcmp(str,"Правильно") == 0)) {
+                system("say ""Здорово!""");
+                return 0;
+            }
+            
             if ((strcmp(str,"не") != 0) && (strcmp(str,"нет") != 0))
                 Tree->cell = Tree->cell->nextr;
             else
@@ -155,6 +164,9 @@ int AkinatorGo (Tree_t* Tree) {
             printf ("Это %s\n", Tree->cell->data);
             _SAY_("Это ", Tree->cell->data, ".");
             scanf("%s", str);
+            if ((strcmp(str,"точнее") == 0) ) {
+                AkinatorIf (Tree);
+            }
             if ((strcmp(str,"не") == 0) || (strcmp(str,"нет") == 0))
                 AkinatorPlus (Tree);
             
@@ -203,12 +215,50 @@ int AkinatorPlus (Tree_t* Tree) {
 }
 
 
+int AkinatorIf (Tree_t* Tree) {
+    assert(Tree);
+    
+    char* str1 = new char [CELL_SIZE_DATA];
+    char* str2 = new char [CELL_SIZE_DATA];
+    Cell_t* cell_new1 = CellNew (Tree);
+    Cell_t* cell_new2 = CellNew (Tree);
+    
+    
+    
+    printf("Что это тогда?\n");
+    system("say ""Что это тогда?""");
+    scanf("%s", str1);
+    printf("А не %s?\n", Tree->cell->data);
+    _SAY_("А не ", Tree->cell->data, "?");
+    scanf("%s", str2);
+    
+    cell_new1->data = str1;
+    cell_new2->data = str2;
+    
+    
+    cell_new1->prev = Tree->cell;
+    cell_new2->prev = Tree->cell;
+    
+    Tree->cell->nextl = cell_new2;
+    Tree->cell->nextr = cell_new1;
+    
+    
+    return 0;
+}
+
+
 
 int AkinatorSay (Tree_t* Tree, char* str) {
     
     Tree->str_param = str;
     Tree->position_cell = TreePositionCell_data(Tree, Tree->position_first_cell);
-    AkinatorSayPrint (Tree, Tree->position_cell);
+    
+    if (Tree->position_cell != NULL)
+        AkinatorSayPrint (Tree, Tree->position_cell);
+    else {
+        printf("Извините, я ничего не нашла(\n");
+        system("say ""Извините, я ничего не нашла...""");
+    }
     
     return 0;
 }
@@ -229,11 +279,11 @@ int AkinatorSayPrint (Tree_t* Tree, Cell_t* cell) {
             if (cell->prev != NULL)
                 if (cell_copy->prev->nextl == cell_copy) {
                     printf("не ");
-                    system("say ""не """);
+                    system("say ""не""");
                 }
-            printf(" %s,", cell->data);
+            printf("%s ", cell->data);
             
-            _SAY_("", cell->data, ", ");
+            _SAY_("", cell->data, "");
             
             cell_copy = cell;
             cell = cell->prev;
@@ -267,6 +317,10 @@ int AkinatorBool (Tree_t* Tree) {
     List_Tree(cell1, list1);
     List_Tree(cell2, list2);
     
+    list1->position_cell = list1->position_cell->prev;
+    list2->position_cell = list2->position_cell->prev;
+    
+    
     
     while ((list2->position_cell != NULL) && (list1->position_cell != NULL) &&
            (strcmp(list1->position_cell->data, list2->position_cell->data) == 0)) {
@@ -276,7 +330,10 @@ int AkinatorBool (Tree_t* Tree) {
         
         list1->position_cell = list1->position_cell->prev;
         list2->position_cell = list2->position_cell->prev;
+        
+        
     }
+    
     
     while ((list1->position_cell != NULL) && (list1->position_cell->prev != NULL)) {
         printf("%s %s\n", str1, list1->position_cell->data);
@@ -293,8 +350,11 @@ int AkinatorBool (Tree_t* Tree) {
         
         list2->position_cell = list2->position_cell->prev;
     }
-    ListDestructor (list1);
-    ListDestructor (list2);
+    
+    delete list1;
+    delete list2;
+    
+    
     return 0;
 }
 
