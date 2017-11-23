@@ -54,6 +54,10 @@ char* No_Cell (char* str);
 
 
 
+int _SAY_(const char* str1, const char* str2, const char* str3);
+
+
+
 int main(int argc, const char * argv[]) {
     // insert code here...
     
@@ -129,11 +133,7 @@ int AkinatorGo (Tree_t* Tree) {
     do {
         if ((Tree->cell->nextl != NULL) && (Tree->cell->nextr != NULL)) {
             printf ("Это %s?\n", Tree->cell->data);
-            str_say [0] = '\0';
-            strcat(str_say, "say ""Это ");
-            strcat(str_say, Tree->cell->data);
-            strcat(str_say, "?");
-            system(str_say);
+            _SAY_("Это ", Tree->cell->data, "?");
             scanf("%s", str);
             if ((strcmp(str,"не") != 0) && (strcmp(str,"нет") != 0))
                 Tree->cell = Tree->cell->nextr;
@@ -153,14 +153,10 @@ int AkinatorGo (Tree_t* Tree) {
         
         if ((Tree->cell->nextl == NULL) && (Tree->cell->nextr == NULL)) {
             printf ("Это %s\n", Tree->cell->data);
-            str_say [0] = '\0';
-            strcat(str_say, "say ""Это ");
-            strcat(str_say, Tree->cell->data);
-            strcat(str_say, ".");
-            system(str_say);
+            _SAY_("Это ", Tree->cell->data, ".");
             scanf("%s", str);
             if ((strcmp(str,"не") == 0) || (strcmp(str,"нет") == 0))
-                return AkinatorPlus (Tree);
+                AkinatorPlus (Tree);
             
             system("say ""Здорово!""");
             return 0;
@@ -176,28 +172,25 @@ int AkinatorGo (Tree_t* Tree) {
 
 int AkinatorPlus (Tree_t* Tree) {
     assert(Tree);
+    
     char* str1 = new char [CELL_SIZE_DATA];
     char* str2 = new char [CELL_SIZE_DATA];
+    Cell_t* cell_new1 = CellNew (Tree);
+    Cell_t* cell_new2 = CellNew (Tree);
+    
+    
     
     printf("Что это тогда?\n");
     system("say ""Что это тогда?""");
     scanf("%s", str1);
-    
     printf("А чем отличается от %s?\n", Tree->cell->data);
-    char str_say [CELL_SIZE_DATA+CELL_SIZE_DATA];
-    str_say [0] = '\0';
-    strcat(str_say, "say ""А чем отличается от  ");
-    strcat(str_say, Tree->cell->data);
-    strcat(str_say, ".");
-    system(str_say);
+    _SAY_("А чем отличается от ", Tree->cell->data, ".");
     scanf("%s", str2);
-    
-    Cell_t* cell_new1 = CellNew (Tree);
-    Cell_t* cell_new2 = CellNew (Tree);
     
     cell_new1->data = Tree->cell->data;
     cell_new2->data = str1;
     Tree->cell->data = str2;
+    
     
     cell_new1->prev = Tree->cell;
     cell_new2->prev = Tree->cell;
@@ -225,13 +218,9 @@ int AkinatorSay (Tree_t* Tree, char* str) {
 int AkinatorSayPrint (Tree_t* Tree, Cell_t* cell) {
     
     printf("%s - ", cell->data);
-    char str_say [CELL_SIZE_DATA+CELL_SIZE_DATA];
-    str_say [0] = '\0';
     
-    strcat(str_say, "say """);
-    strcat(str_say, cell->data);
-    strcat(str_say, " - """);
-    system(str_say);
+    _SAY_("", cell->data, " - ");
+    
     Cell_t* cell_copy;
     
         cell_copy = cell;
@@ -244,11 +233,7 @@ int AkinatorSayPrint (Tree_t* Tree, Cell_t* cell) {
                 }
             printf(" %s,", cell->data);
             
-            str_say [0] = '\0';
-            strcat(str_say, "say """);
-            strcat(str_say, cell->data);
-            strcat(str_say, " , ");
-            system(str_say);
+            _SAY_("", cell->data, ", ");
             
             cell_copy = cell;
             cell = cell->prev;
@@ -283,16 +268,11 @@ int AkinatorBool (Tree_t* Tree) {
     List_Tree(cell2, list2);
     
     
-    char str_say [CELL_SIZE_DATA+CELL_SIZE_DATA];
     while ((list2->position_cell != NULL) && (list1->position_cell != NULL) &&
            (strcmp(list1->position_cell->data, list2->position_cell->data) == 0)) {
         printf("они оба %s\n", list1->position_cell->data);
-        str_say [0] = '\0';
         
-        strcat(str_say, "say ""они оба ");
-        strcat(str_say, list1->position_cell->data);
-        strcat(str_say, """.");
-        system(str_say);
+        _SAY_("они оба ", list1->position_cell->data, ".");
         
         list1->position_cell = list1->position_cell->prev;
         list2->position_cell = list2->position_cell->prev;
@@ -300,25 +280,17 @@ int AkinatorBool (Tree_t* Tree) {
     
     while ((list1->position_cell != NULL) && (list1->position_cell->prev != NULL)) {
         printf("%s %s\n", str1, list1->position_cell->data);
-        str_say [0] = '\0';
         
-        strcat(str_say, "say """);
-        strcat(str_say, str1);
-        strcat(str_say, list1->position_cell->data);
-        strcat(str_say, """.");
-        system(str_say);
+        _SAY_(str1, list1->position_cell->data, ".");
+        
         list1->position_cell = list1->position_cell->prev;
     }
     
     while ((list2->position_cell != NULL) && (list2->position_cell->prev != NULL)) {
         printf("%s %s\n", str2, list2->position_cell->data);
-        str_say [0] = '\0';
         
-        strcat(str_say, "say """);
-        strcat(str_say, str2);
-        strcat(str_say, list2->position_cell->data);
-        strcat(str_say, """.");
-        system(str_say);
+        _SAY_(str2, list2->position_cell->data, ".");
+        
         list2->position_cell = list2->position_cell->prev;
     }
     ListDestructor (list1);
@@ -348,10 +320,10 @@ int List_Tree (Cell_t* cell, List_t* list) {
 }
 
 
-//diffrence Volk Sobaka
+
 char* No_Cell (char* str) {
-    char* str_new = new char [CELL_SIZE_DATA + 3];
-    //str_new [0] = '\0';
+    char* str_new = new char [CELL_SIZE_DATA * 2];
+    str_new [0] = '\0';
     
     strcat(str_new, "не ");
     strcat(str_new, str);
@@ -359,3 +331,22 @@ char* No_Cell (char* str) {
     return str_new;
 }
 
+
+
+int _SAY_(const char* str1, const char* str2, const char* str3) {
+    assert(str1);
+    assert(str2);
+    assert(str3);
+    
+    char str_say [CELL_SIZE_DATA * 5];
+    str_say [0] = '\0';
+    
+    strcat(str_say, "say """);
+    strcat(str_say, str1);
+    strcat(str_say, str2);
+    strcat(str_say, str3);
+    strcat(str_say, """");
+    system(str_say);
+    
+    return 0;
+}

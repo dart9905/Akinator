@@ -95,7 +95,7 @@ int printlist (List_t* List) {
     List->cell = List->position_first_cell;
     printf("\n=========\n");
     for (int i = 0; i < List->size; ++i) {
-        printf("\ncell[%i]\n    data = %i;\n    pcell = %p;\n    next = %p;\n    prev = %p;\n", (List->cell)->number, (List->cell)->data, List->cell, (List->cell)->next, (List->cell)->prev);
+        printf("\ncell[%i]\n    data = %s;\n    pcell = %p;\n    next = %p;\n    prev = %p;\n", (List->cell)->number, (List->cell)->data, List->cell, (List->cell)->next, (List->cell)->prev);
         List->cell = (List->cell)->next;
         
     }
@@ -144,7 +144,7 @@ int ListDestructor (List_t* List) {
     for (int i = 1; i < List->size; ++i) {
         List->position_cell = List->cell;
         List->cell = (List->cell)->next;
-        delete List->cell->data;
+        delete [] List->cell->data;
         delete List->position_cell;
     }
     delete List;
@@ -243,7 +243,7 @@ int ListDump (List_t* List) {
     List->cell = List->position_first_cell;
     
     for (long int i = 0; i < List->size; ++i) {
-        fprintf(file_dump, "\t\"node%i\" [label = \"<f0>data = %i |<f1>next = %p |<f2>pos = %p |<f3>prev = %p\" ] ;\n", (List->cell)->number, (List->cell)->data, (List->cell)->next, List->cell, (List->cell)->prev);
+        fprintf(file_dump, "\t\"node%i\" [label = \"<f0>data = %s |<f1>next = %p |<f2>pos = %p |<f3>prev = %p\" ] ;\n", (List->cell)->number, (List->cell)->data, (List->cell)->next, List->cell, (List->cell)->prev);
         List->cell = (List->cell)->next;
         
     }
