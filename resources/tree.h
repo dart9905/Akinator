@@ -163,6 +163,24 @@ Cell_t* TreePrintNodeUSE2 (Tree_t* Tree, Cell_t* cell);
 
 
 /*!
+ \brief PositionCell_data  ПОТОМ ХУЯКНУ СУДЫ ОПРЕДЕЛЕНИЕ
+ \param Tree pointer to TYPE type Tree
+ \param cell print pointer to a dump cell
+ \return Cell_t* pointer to the branch
+ */
+Cell_t* TreePositionCell_data (Tree_t* Tree, Cell_t* cell);
+
+
+/*!
+ \brief TreePosRecurs_data ПОТОМ ХУЯКНУ СУДЫ ОПРЕДЕЛЕНИЕ, this function is used only in the TreeGoRound and in the TreeRecurs
+ \param Tree pointer to TYPE type Tree
+ \param cell print pointer to a dump cell
+ \return Cell_t pointer to the previous branch in the tree
+ */
+Cell_t* TreePosRecurs_data (Tree_t* Tree, Cell_t* cell);
+
+
+/*!
  \brief PositionCell search for a branch with a number in cell_number in the Tree
  \param Tree pointer to TYPE type Tree
  \param cell_number number of the desired branch
@@ -446,13 +464,35 @@ Cell_t* TreePrintNode2 (Tree_t* Tree, Cell_t* cell) {
     FILE *file_dump = fopen(DUMP_DOT_NAME_FILES,"at");
     
     if (cell->nextl != NULL)
-        fprintf(file_dump, "\t\"node%i\":f1 -> \"node%i\":f3;\n", cell->number, (cell->nextl)->number);
+        fprintf(file_dump, "\t\"node%i\":f1 -> \"node%i\":f3 [color=""red""];\n", cell->number, (cell->nextl)->number);
     if (cell->nextr != NULL)
-        fprintf(file_dump, "\t\"node%i\":f2 -> \"node%i\":f3;\n", cell->number, (cell->nextr)->number);
+        fprintf(file_dump, "\t\"node%i\":f2 -> \"node%i\":f3 [color=""green""];\n", cell->number, (cell->nextr)->number);
     if (cell->prev != NULL)
         fprintf(file_dump, "\t\"node%i\":f4 -> \"node%i\":f3;\n", cell->number, (cell->prev)->number);
     
     fclose(file_dump);
+    return cell->prev;
+}
+
+
+
+Cell_t* TreePositionCell_data (Tree_t* Tree, Cell_t* cell) {
+    assert(Tree);
+    
+    Tree->cell = Tree->position_first_cell;
+    Tree->position_cell = cell;
+    
+    TreeGoRound (Tree, Tree->position_first_cell, TreePosRecurs_data, FROM_BELOW);
+    
+    return Tree->position_cell;
+}
+
+
+
+Cell_t* TreePosRecurs_data (Tree_t* Tree, Cell_t* cell) {
+    if (strcmp(Tree->str_param, cell->data) == 0) {
+        Tree->position_cell = cell;
+    }
     return cell->prev;
 }
 
