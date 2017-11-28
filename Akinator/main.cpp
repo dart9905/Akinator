@@ -65,7 +65,7 @@ int _SAY_(const char* str1, const char* str2, const char* str3);
 int main(int argc, const char * argv[]) {
     // insert code here...
     
-    char str [20];
+    char str [CELL_SIZE_DATA] = "";
     
     Tree_t* Tree = TreeConstruct("Привет");
     
@@ -132,14 +132,13 @@ int Dialog (char* str, Tree_t* Tree) {
 int AkinatorGo (Tree_t* Tree) {
     assert(Tree);
     Tree->cell = Tree->position_first_cell;
-    char str [CELL_SIZE_DATA];
-    char str_say [CELL_SIZE_DATA+CELL_SIZE_DATA];
+    char str [CELL_SIZE_DATA] = "";
     do {
         if ((Tree->cell->nextl != NULL) && (Tree->cell->nextr != NULL)) {
             printf ("Это %s?\n", Tree->cell->data);
             _SAY_("Это ", Tree->cell->data, "?");
             scanf("%s", str);
-            if ((strcmp(str,"Угадала") == 0) || (strcmp(str,"Правильно") == 0)) {
+            if ((strcmp(str,"верно") == 0) || (strcmp(str,"угадала") == 0) || (strcmp(str,"правильно") == 0)) {
                 system("say ""Здорово!""");
                 return 0;
             }
@@ -297,8 +296,8 @@ int AkinatorSayPrint (Tree_t* Tree, Cell_t* cell) {
 
 int AkinatorBool (Tree_t* Tree) {
     
-    char str1 [CELL_SIZE_DATA];
-    char str2 [CELL_SIZE_DATA];
+    char str1 [CELL_SIZE_DATA] = "";
+    char str2 [CELL_SIZE_DATA] = "";
     scanf("%s", str1);
     scanf("%s", str2);
     
@@ -398,7 +397,7 @@ int _SAY_(const char* str1, const char* str2, const char* str3) {
     assert(str2);
     assert(str3);
     
-    char str_say [CELL_SIZE_DATA * 5];
+    char str_say [CELL_SIZE_DATA * 5] = "";
     str_say [0] = '\0';
     
     strcat(str_say, "say """);

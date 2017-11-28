@@ -593,7 +593,7 @@ char* TreeReadFilesRecurs (char* my_buffer, long int number_of_char, Tree_t* Tre
     }
     //{<<<<<<<<<<<<<<<<<<PRINTF>>>>>>>>>>>>>>>>>>
     printf("%s\n",str);
-    for (int i = 0; ((i < number_of_char) && (my_buffer [0] != '(') && (my_buffer [0] != ')')); ++i, ++my_buffer) {//printf("%c", my_buffer[0]);
+    for (int i = 0; ((i < number_of_char) && (my_buffer [0] != '(') && (my_buffer [0] != ')')); ++i, ++my_buffer) {//printf("%c\n", my_buffer[0]);
     }
     Cell_t* cell_new = new Cell_t;
     cell_new->data = str;
@@ -614,9 +614,17 @@ char* TreeReadFilesRecurs (char* my_buffer, long int number_of_char, Tree_t* Tre
     
     if (my_buffer [0] == '(') {
         my_buffer = TreeReadFilesRecurs(my_buffer, number_of_char, Tree, cell_new, LEFT_cell);
+        
+        ++my_buffer;
+        for (int i = 0; ((i < number_of_char) && (my_buffer [0] != '(') && (my_buffer [0] != ')')); ++i, ++my_buffer) {//printf("%c\n", my_buffer[0]);
+        }
+        if (my_buffer [0] == ')') {
+            return my_buffer;
+        }
+        
         my_buffer = TreeReadFilesRecurs(my_buffer, number_of_char, Tree, cell_new, RIGHT_cell);
     }
-        
+    
     return my_buffer;
 }
 
