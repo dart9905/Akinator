@@ -81,7 +81,7 @@ int main(int argc, const char * argv[]) {
     
     TreePrintFile(Tree, Tree->cell->nextl);
     
-    TreeDump(Tree, Tree->cell->nextl);
+    TreeDump(Tree, Tree->position_first_cell);
     
     TreeDestructor(Tree);
     
